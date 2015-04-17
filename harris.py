@@ -3,8 +3,8 @@ import cv2
 
 
 ### read image file here
-def readFile():
-    img_bgr = cv2.imread('./sample/cow.jpg')
+def readFile(path):
+    img_bgr = cv2.imread(path)
     return img_bgr
 
 ### draw dots on img
@@ -103,7 +103,7 @@ def harris(img_bgr):
 
 ### main function
 if __name__ == "__main__":
-    img_bgr = readFile()
+    img_bgr = readFile('./sample/cow.jpg')
     img_result = harris(img_bgr)
     cv2.imwrite('corner_harris.jpg', img_result)
 
