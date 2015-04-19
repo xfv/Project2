@@ -13,9 +13,9 @@ def descriptor(img, xy):
             features[i, j] = img[neighbors[j, 0], neighbors[j, 1]]
     return features
 
-
-def solve_M(xy_1, features_1, xy_2, features_2):
+def find_pair(xy_1, features_1, xy_2, features_2):
     value = {}
+    arg = {}
     pair = []
     for f in range(len(features_2)):
         diff = np.tile(features_2[f], (len(features_1),1)) - features_1
@@ -23,22 +23,34 @@ def solve_M(xy_1, features_1, xy_2, features_2):
         diff = sum(diff, 1)
         min_arg = np.argmax(diff)
         min_value = np.min(diff)
-        if min_arg in value:
-            if min_value > value[min_arg]:
-                continue
-        value[min_arg] = min_value
         pair.append(min_arg)
+        if min_arg in value:
+            if not (min_value < value[min_arg]):
+                continue
+        arg[min_arg] = f
+        value[min_arg] = min_value
+    pair_1 = np.zeros((len(arg),2))
+    pair_2 = np.zeros((len(arg),2))
+    pair_idx = 0
+    for p in range(len(pair)):
+        if not arg[pair[p]] == p:
+            continue
+        pair_1[pair_idx] = xy_1[pair[p]]
+        pair_2[pair_idx] = xy_2[p]
+        pair_idx += 1
+    return pair_1, pair_2
 
+def solve_M(pair_1, pair_2):
     # solving Ax = B
-    A = np.zeros((len(pair)*2, 4))
-    B = np.zeros((len(pair)*2, 1))
-    for i in range(len(pair)):
-        B[2*i] = xy_1[pair[i], 0]
-        B[2*i+1] = xy_1[pair[i], 1]
-        A[2*i, 0] = xy_2[i, 0]
-        A[2*i, 1] = xy_2[i, 1]
-        A[2*i+1, 2] = xy_2[i, 0]
-        A[2*i+1, 3] = xy_2[i, 1]
+    A = np.zeros((len(pair_2)*2, 4))
+    B = np.zeros((len(pair_1)*2, 1))
+    for i in range(len(pair_1)):
+        B[2*i] = pair_1[i, 0]
+        B[2*i+1] = pair_1[i, 1]
+        A[2*i, 0] = pair_2[i, 0]
+        A[2*i, 1] = pair_2[i, 1]
+        A[2*i+1, 2] = pair_2[i, 0]
+        A[2*i+1, 3] = pair_2[i, 1]
 
     x = np.zeros((4,1))
     err, x = cv2.solve(A, B, x, cv2.DECOMP_SVD)
@@ -49,4 +61,5 @@ xy_2 = np.random.randint(10, size = (10,2))
 img = np.random.random((15,15))
 features_1 = descriptor(img, xy_1)
 features_2 = descriptor(img, xy_2)
-x = solve_M(xy_1, features_1, xy_2, features_2)
+pair_1, pair_2 = find_pair(xy_1, features_1, xy_2, features_2)
+x = solve_M(pair_1, pair_2)
