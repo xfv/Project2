@@ -3,7 +3,7 @@ import cv2
 from scipy import ndimage
 
 def get_neighbors(x, y, rows, cols):
-    return np.array([(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y), (x, y), (x+1, y), (x-1, y+1), (x, y+1), (x+1, y+1)])
+    return np.array([(y-1, x-1), (y-1, x), (y-1, x+1), (y, x-1), (y, x), (y, x+1), (y+1, x-1), (y+1, x), (y+1, x+1)])
 
 def descriptor(img, xy):
     features = np.zeros((len(xy), 9))
@@ -45,12 +45,12 @@ def solve_M(pair_1, pair_2):
     A = np.zeros((len(pair_2)*2, 4))
     B = np.zeros((len(pair_1)*2, 1))
     for i in range(len(pair_1)):
-        B[2*i] = pair_1[i, 0]
-        B[2*i+1] = pair_1[i, 1]
-        A[2*i, 0] = pair_2[i, 0]
-        A[2*i, 1] = pair_2[i, 1]
-        A[2*i+1, 2] = pair_2[i, 0]
-        A[2*i+1, 3] = pair_2[i, 1]
+        B[2*i] = pair_1[i, 1]
+        B[2*i+1] = pair_1[i, 0]
+        A[2*i, 0] = pair_2[i, 1]
+        A[2*i, 1] = pair_2[i, 0]
+        A[2*i+1, 2] = pair_2[i, 1]
+        A[2*i+1, 3] = pair_2[i, 0]
 
     x = np.zeros((4,1))
     err, x = cv2.solve(A, B, x, cv2.DECOMP_SVD)

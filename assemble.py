@@ -9,7 +9,7 @@ def assemble(img_bgr, M):
     M = []
     for i in range(len(img_bgr)):
         img_y = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
-        corners.append(harris(img_y))
+        corners.append(harris(img_y)) # corners format(y, x)
         descriptors.append(descriptor(img_y, corners[i]))
     for i in range(len(img_bgr)-1):
         pairs.append(find_pair(corners[i], descriptors[i], corners[i+1], descriptors[i+1]))
@@ -28,7 +28,7 @@ def assemble(img_bgr, M):
         x = np.reshape(x, (rows, cols))
         y = np.reshape(y, (rows, cols))
         if i == 0:
-            position.append([x, y])
+            position.append([y, x])
             continue
         new_x = x*M[i-1][0,0] + y*M[i-1][0,1] # x*m11 + y*m12 = x'
         new_y = x*M[i-1][1,0] + y*M[i-1][1,1] # x*m21 + y*m22 = y'
@@ -56,7 +56,7 @@ def assemble(img_bgr, M):
             weight_y_end = position[i-1][0][-1,-1] + 1
         else:
             weight_y_start = position[i][0][0,0]
-            weight_y_end = position[i][-1,0] + 1
+            weight_y_end = position[i][0][-1,0] + 1
         weight_x_start = position[i][1][0,0]
         weight_x_end = position[i-1][1][-1,-1] + 1
         if weight_y_start == weight_y_end or weight_x_start == weight_x_end:
