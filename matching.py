@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from scipy import ndimage
 
-def get_neighbors(x, y):
+def get_neighbors(x, y, rows, cols):
     return np.array([(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y), (x, y), (x+1, y), (x-1, y+1), (x, y+1), (x+1, y+1)])
 
 def descriptor(img, xy):
@@ -56,10 +56,14 @@ def solve_M(pair_1, pair_2):
     err, x = cv2.solve(A, B, x, cv2.DECOMP_SVD)
     return x
 
-xy_1 = np.random.randint(10, size = (10,2))
-xy_2 = np.random.randint(10, size = (10,2))
-img = np.random.random((15,15))
-features_1 = descriptor(img, xy_1)
-features_2 = descriptor(img, xy_2)
-pair_1, pair_2 = find_pair(xy_1, features_1, xy_2, features_2)
-x = solve_M(pair_1, pair_2)
+def main():
+    xy_1 = np.random.randint(10, size = (10,2))
+    xy_2 = np.random.randint(10, size = (10,2))
+    img = np.random.random((15,15))
+    features_1 = descriptor(img, xy_1)
+    features_2 = descriptor(img, xy_2)
+    pair_1, pair_2 = find_pair(xy_1, features_1, xy_2, features_2)
+    x = solve_M(pair_1, pair_2)
+
+if __name__ == '__main__':
+    main() 
