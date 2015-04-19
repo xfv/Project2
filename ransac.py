@@ -13,7 +13,7 @@ def ransac(points_1, points_2):
     ### parameters
     k = 4       ### only need four points to solve 2*2 matrix M
     n = 1000    ### iterations
-    th = 1      ### threshold
+    th = 7      ### threshold
 
     ### dimension
     len_1 = len(points_1)
@@ -35,7 +35,7 @@ def ransac(points_1, points_2):
             selected_2[i] = points_2[random.randrange(len_2)]
         
         ### calculate Homography for these four points
-        homo = solve_M(selected_1, selected_2)
+        homo = matching.solve_M(selected_1, selected_2)
 
         ### calculate distance and threshold
         point_solved = numpy.inner(points_2, homo)

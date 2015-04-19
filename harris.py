@@ -91,7 +91,7 @@ def harris(img_bgr):
     img_good = drawDots(img_bgr, corners_good)
     cv2.imwrite('cv_good.jpg', img_good)
 
-    return img_bgr
+    return corners 
 
 
 

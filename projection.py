@@ -54,7 +54,7 @@ def cyCorrect(img, f):
     row_max += 40
     col_max += 20
     ### do the job
-    result = numpy.zeros((row_max, col_max, depth))
+    result = numpy.zeros((row_max, col_max, depth), dtype='uint8')
     for row in range(row_max):
         for col in range(col_max):
             result[row][col] = getPixelValue(row, col, img, f)
