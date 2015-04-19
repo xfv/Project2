@@ -20,7 +20,7 @@ def drawDots(img, dots):
 
 
 ### Harris Corner Detection
-def harris(img_bgr):
+def harris(img_y):
 
     ### parameters
 
@@ -29,7 +29,7 @@ def harris(img_bgr):
     R_min   = 60000       ### threshold for harris corner detector
 
     ### need gray scale only
-    img_y = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
+    #img_y = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
 
 
     ### Calculate x and y derivatives of img

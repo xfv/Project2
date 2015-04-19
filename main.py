@@ -16,6 +16,10 @@ print 'cyCorrect'
 img_1_cy = projection.cyCorrect(img_1, 704)
 img_2_cy = projection.cyCorrect(img_2, 704)
 
+### get gray scale
+img_1_gray = cv2.cvtColor(img_1_cy, cv2.COLOR_BGR2GRAY)
+img_2_gray = cv2.cvtColor(img_2_cy, cv2.COLOR_BGR2GRAY)
+
 ### harris
 ### points are(x, y) not (row, col)
 print 'harris'
@@ -24,8 +28,6 @@ points_2 = harris.harris(img_2_cy)
 
 ### get feature
 print 'getting features'
-img_1_gray = cv2.cvtColor(img_1, cv2.COLOR_BGR2GRAY)
-img_2_gray = cv2.cvtColor(img_2, cv2.COLOR_BGR2GRAY)
 feature_1 = matching.descriptor(img_1_gray, points_1)
 feature_2 = matching.descriptor(img_2_gray, points_2)
 
@@ -38,8 +40,8 @@ pairs = matching.find_pair(points_1, feature_1, points_2, features_2)
 print 'RANSAC...'
 pairs = ransac.ransac(pairs)
 
-img_1 = harris.drawDots(img_1, paris[0])
-img_2 = harris.drawDots(img_2, paris[0])
+img_1 = harris.drawDots(img_1_cy, paris[0])
+img_2 = harris.drawDots(img_2_cy, paris[0])
 
 cv2.imwrite('img_1.jpg', img_1)
 cv2.imwrite('img_2.jpg', img_2)
