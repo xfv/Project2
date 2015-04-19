@@ -15,7 +15,8 @@ img_2 = harris.readFile('./sample/parrington/prtn12.jpg')
 print 'cyCorrect'
 img_1_cy = projection.cyCorrect(img_1, 704)
 img_2_cy = projection.cyCorrect(img_2, 704)
-
+cv2.imwrite('img_1_cy.jpg', img_1_cy)
+cv2.imwrite('img_2_cy.jpg', img_2_cy)
 ### get gray scale
 img_1_gray = cv2.cvtColor(img_1_cy, cv2.COLOR_BGR2GRAY)
 img_2_gray = cv2.cvtColor(img_2_cy, cv2.COLOR_BGR2GRAY)
@@ -23,8 +24,13 @@ img_2_gray = cv2.cvtColor(img_2_cy, cv2.COLOR_BGR2GRAY)
 ### harris
 ### points are(x, y) not (row, col)
 print 'harris'
-points_1 = harris.harris(img_1_cy)
-points_2 = harris.harris(img_2_cy)
+points_1 = harris.harris(img_1_gray)
+points_2 = harris.harris(img_2_gray)
+### draw dots
+img_1_harris = harris.drawDots(img_1, points_1)
+img_2_harris = harris.drawDots(img_2, points_2)
+cv2.imwrite('img_1_harris.jpg', img_1_harris)
+cv2.imwrite('img_2_harris.jpg', img_2_harris)
 
 ### get feature
 print 'getting features'

@@ -18,6 +18,17 @@ def drawDots(img, dots):
 
     return tmp
 
+### check border
+def checkNeighbor(points, x_max, y_max):
+    result = numpy.copy(points)
+    for i in range(len(points)):
+        x = points[i][0]
+        y = points[i][1]
+        if x<1 or y<1 or x>x_max-2 or y>y_max-2:
+            numpy.delete(result, i, 0)
+
+    return result
+
 
 ### Harris Corner Detection
 def harris(img_y):
@@ -77,10 +88,10 @@ def harris(img_y):
     del trace
 
 
-    ### Find corners and draw dots on original map at harris corner
+    ### Find corners 
     corners = numpy.transpose((R>R_min).nonzero())
     corners = numpy.fliplr(corners)         ### (row, column) = (y, x) so need to switch 
-    img_bgr = drawDots(img_bgr, corners)
+    corners = checkNeighbor(corners, len(img_y[0]), len(img_y) )
 
 
     ### Generate harris corner image by opencv function
@@ -88,8 +99,6 @@ def harris(img_y):
     ### GoodFeaturesToTrack
     corners_good = cv2.goodFeaturesToTrack(img_y, 500, 0.0005, 10, None,  None, 3, True, k)
     corners_good = numpy.reshape(corners_good, (len(corners_good), 2) )
-    img_good = drawDots(img_bgr, corners_good)
-    cv2.imwrite('cv_good.jpg', img_good)
 
     return corners 
 
