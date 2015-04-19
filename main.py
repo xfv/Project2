@@ -5,7 +5,7 @@ import projection
 import matching
 
 
-### main function for pararoma
+### main function for panorama
 print 'reading files..'
 img_1 = harris.readFile('./sample/parrington/prtn13.jpg')
 img_2 = harris.readFile('./sample/parrington/prtn12.jpg')
@@ -40,8 +40,8 @@ pairs = matching.find_pair(points_1, feature_1, points_2, features_2)
 print 'RANSAC...'
 pairs = ransac.ransac(pairs)
 
-img_1 = harris.drawDots(img_1_cy, paris[0])
-img_2 = harris.drawDots(img_2_cy, paris[0])
+img_1 = harris.drawDots(img_1_cy, pairs[0])
+img_2 = harris.drawDots(img_2_cy, pairs[0])
 
 cv2.imwrite('img_1.jpg', img_1)
 cv2.imwrite('img_2.jpg', img_2)
