@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 from scipy import ndimage
 
-def get_neighbors(x, y, rows, cols):
+def get_neighbors(x, y):
     return np.array([(x-1, y-1), (x, y-1), (x+1, y-1), (x-1, y), (x, y), (x+1, y), (x-1, y+1), (x, y+1), (x+1, y+1)])
 
 def descriptor(img, xy):
