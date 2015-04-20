@@ -21,7 +21,9 @@ def find_pair(xy_1, features_1, xy_2, features_2):
         diff = np.tile(features_2[f], (len(features_1),1)) - features_1
         diff = diff**2
         diff = sum(diff, 1)
-        min_arg = np.argmax(diff)
+        print 'f', f
+        print 'diff', diff
+        min_arg = np.argmin(diff)
         min_value = np.min(diff)
         pair.append(min_arg)
         if min_arg in value:
@@ -59,10 +61,14 @@ def solve_M(pair_1, pair_2):
 def main():
     xy_1 = np.random.randint(10, size = (10,2))
     xy_2 = np.random.randint(10, size = (10,2))
+    print 'xy_1', xy_1
+    print 'xy_2', xy_2
     img = np.random.random((15,15))
     features_1 = descriptor(img, xy_1)
     features_2 = descriptor(img, xy_2)
     pair_1, pair_2 = find_pair(xy_1, features_1, xy_2, features_2)
+    print 'pair_1', pair_1
+    print 'pair_2', pair_2
     x = solve_M(pair_1, pair_2)
 
 if __name__ == '__main__':
