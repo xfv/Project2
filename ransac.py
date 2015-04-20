@@ -13,7 +13,7 @@ def ransac(points_1, points_2):
     ### parameters
     k = 4       ### only need four points to solve 2*2 matrix M
     n = 1000    ### iterations
-    th = 700      ### threshold
+    th = 70     ### threshold
 
     ### dimension
     len_1 = len(points_1)
