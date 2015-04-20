@@ -8,8 +8,8 @@ import ransac
 
 ### main function for panorama
 print 'reading files..'
-img_1 = harris.readFile('./sample/parrington/prtn13.jpg')
-img_2 = harris.readFile('./sample/parrington/prtn12.jpg')
+img_1 = harris.readFile('parrington/prtn13.jpg')
+img_2 = harris.readFile('parrington/prtn12.jpg')
 
 
 ### correction
@@ -21,6 +21,8 @@ cv2.imwrite('img_2_cy.jpg', img_2_cy)
 ### get gray scale
 img_1_gray = cv2.cvtColor(img_1_cy, cv2.COLOR_BGR2GRAY)
 img_2_gray = cv2.cvtColor(img_2_cy, cv2.COLOR_BGR2GRAY)
+cv2.imwrite('img_1_gray.jpg', img_1_gray)
+cv2.imwrite('img_2_gray.jpg', img_2_gray)
 
 ### harris
 ### points are(x, y) not (row, col)
@@ -34,23 +36,22 @@ cv2.imwrite('img_1_harris.jpg', img_1_harris)
 cv2.imwrite('img_2_harris.jpg', img_2_harris)
 
 ### get feature
-print 'getting features'
+print 'getting features...'
 feature_1 = matching.descriptor(img_1_gray, points_1)
 feature_2 = matching.descriptor(img_2_gray, points_2)
 
 print 'matching...'
-pairs = matching.find_pair(points_1, feature_1, points_2, feature_2)
+pair_1, pair_2 = matching.find_pair(points_1, feature_1, points_2, feature_2)
 
+img_1_pair = harris.drawDots(img_1_cy, pair_1)
+img_2_pair = harris.drawDots(img_2_cy, pair_2)
+cv2.imwrite('img_1_pair.jpg', img_1_pair)
+cv2.imwrite('img_2_pair.jpg', img_2_pair)
 
 ### run RANSAC
 ### pairs = [ points_1, points_2 ]
 print 'RANSAC...'
-pairs = ransac.ransac(pairs[0], pairs[1])
+pairs = ransac.ransac(pair_1, pair_2)
 
-print pairs[0].shape
+#print pairs[0].shape
 
-img_1 = harris.drawDots(img_1_cy, pairs[0])
-img_2 = harris.drawDots(img_2_cy, pairs[1])
-
-cv2.imwrite('img_1.jpg', img_1)
-cv2.imwrite('img_2.jpg', img_2)

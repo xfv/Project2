@@ -45,7 +45,7 @@ def ransac(points_1, points_2):
             inlier = tmp_inlier
 
 
-    print inlier
+#print inlier
 
     result_1 = points_1[inlier]
     result_2 = points_2[inlier]

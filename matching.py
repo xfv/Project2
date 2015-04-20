@@ -29,8 +29,8 @@ def find_pair(xy_1, features_1, xy_2, features_2):
                 continue
         arg[min_arg] = f
         value[min_arg] = min_value
-    pair_1 = np.zeros((len(arg),2), dtype='uint8')
-    pair_2 = np.zeros((len(arg),2), dtype='uint8')
+    pair_1 = np.zeros((len(arg),2), dtype = 'uint32')
+    pair_2 = np.zeros((len(arg),2), dtype = 'uint32')
     pair_idx = 0
     for p in range(len(pair)):
         if not arg[pair[p]] == p:
