@@ -10,7 +10,7 @@ def descriptor(img, xy):
     for i in range(len(xy)):
         neighbors = get_neighbors(xy[i, 0], xy[i, 1])
         for j in range(9):
-            features[i, j] = img[neighbors[j, 0], neighbors[j, 1]]
+            features[i, j] = img[neighbors[j, 1], neighbors[j, 0]]
     return features
 
 def find_pair(xy_1, features_1, xy_2, features_2):
@@ -29,8 +29,8 @@ def find_pair(xy_1, features_1, xy_2, features_2):
                 continue
         arg[min_arg] = f
         value[min_arg] = min_value
-    pair_1 = np.zeros((len(arg),2))
-    pair_2 = np.zeros((len(arg),2))
+    pair_1 = np.zeros((len(arg),2), dtype='uint8')
+    pair_2 = np.zeros((len(arg),2), dtype='uint8')
     pair_idx = 0
     for p in range(len(pair)):
         if not arg[pair[p]] == p:
@@ -54,7 +54,7 @@ def solve_M(pair_1, pair_2):
 
     x = np.zeros((4,1))
     err, x = cv2.solve(A, B, x, cv2.DECOMP_SVD)
-    return x
+    return np.reshape(x, (2,2))
 
 xy_1 = np.random.randint(10, size = (10,2))
 xy_2 = np.random.randint(10, size = (10,2))

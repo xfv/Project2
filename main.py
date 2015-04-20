@@ -1,8 +1,9 @@
 import harris
 import numpy
-import cv2
+import cv2 
 import projection
 import matching
+import ransac
 
 
 ### main function for panorama
@@ -13,8 +14,8 @@ img_2 = harris.readFile('./sample/parrington/prtn12.jpg')
 
 ### correction
 print 'cyCorrect'
-img_1_cy = projection.cyCorrect(img_1, 704)
-img_2_cy = projection.cyCorrect(img_2, 704)
+img_1_cy = projection.cyCorrect(img_1, 704.289)
+img_2_cy = projection.cyCorrect(img_2, 704.0)
 cv2.imwrite('img_1_cy.jpg', img_1_cy)
 cv2.imwrite('img_2_cy.jpg', img_2_cy)
 ### get gray scale
@@ -27,8 +28,8 @@ print 'harris'
 points_1 = harris.harris(img_1_gray)
 points_2 = harris.harris(img_2_gray)
 ### draw dots
-img_1_harris = harris.drawDots(img_1, points_1)
-img_2_harris = harris.drawDots(img_2, points_2)
+img_1_harris = harris.drawDots(img_1_cy, points_1)
+img_2_harris = harris.drawDots(img_2_cy, points_2)
 cv2.imwrite('img_1_harris.jpg', img_1_harris)
 cv2.imwrite('img_2_harris.jpg', img_2_harris)
 
@@ -38,16 +39,18 @@ feature_1 = matching.descriptor(img_1_gray, points_1)
 feature_2 = matching.descriptor(img_2_gray, points_2)
 
 print 'matching...'
-pairs = matching.find_pair(points_1, feature_1, points_2, features_2)
+pairs = matching.find_pair(points_1, feature_1, points_2, feature_2)
 
 
 ### run RANSAC
 ### pairs = [ points_1, points_2 ]
 print 'RANSAC...'
-pairs = ransac.ransac(pairs)
+pairs = ransac.ransac(pairs[0], pairs[1])
+
+print pairs[0].shape
 
 img_1 = harris.drawDots(img_1_cy, pairs[0])
-img_2 = harris.drawDots(img_2_cy, pairs[0])
+img_2 = harris.drawDots(img_2_cy, pairs[1])
 
 cv2.imwrite('img_1.jpg', img_1)
 cv2.imwrite('img_2.jpg', img_2)

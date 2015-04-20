@@ -13,7 +13,7 @@ def ransac(points_1, points_2):
     ### parameters
     k = 4       ### only need four points to solve 2*2 matrix M
     n = 1000    ### iterations
-    th = 7      ### threshold
+    th = 700      ### threshold
 
     ### dimension
     len_1 = len(points_1)
@@ -41,12 +41,19 @@ def ransac(points_1, points_2):
         point_solved = numpy.inner(points_2, homo)
         distance = numpy.sqrt( numpy.sum( (point_solved-points_1)**2, 1 ) )
         tmp_inlier = numpy.transpose( (distance<th).nonzero() )
-        if len(tmp_inlier) > inlier:
+        if len(tmp_inlier) > len(inlier):
             inlier = tmp_inlier
 
 
+    print inlier
 
-    return points_1[inlier], points_2[inlier]
+    result_1 = points_1[inlier]
+    result_2 = points_2[inlier]
+
+    result_1 = numpy.reshape(result_1, (len(result_1), 2))
+    result_2 = numpy.reshape(result_2, (len(result_2), 2))
+
+    return result_1, result_2 
         
 
 
