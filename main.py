@@ -27,6 +27,7 @@ img_2_gray = cv2.cvtColor(img_2_cy, cv2.COLOR_BGR2GRAY)
 print 'harris'
 points_1 = harris.harris(img_1_gray)
 points_2 = harris.harris(img_2_gray)
+
 ### draw dots
 img_1_harris = harris.drawDots(img_1_cy, points_1)
 img_2_harris = harris.drawDots(img_2_cy, points_2)
@@ -40,6 +41,11 @@ feature_2 = matching.descriptor(img_2_gray, points_2)
 
 print 'matching...'
 pairs = matching.find_pair(points_1, feature_1, points_2, feature_2)
+
+img_1 = harris.drawDots(img_1_cy, pairs[0][20:100])
+img_2 = harris.drawDots(img_2_cy, pairs[1][20:100])
+cv2.imwrite('img_1_pair.jpg', img_1)
+cv2.imwrite('img_2_pair.jpg', img_2)
 
 
 ### run RANSAC
