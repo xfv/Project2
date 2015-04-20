@@ -48,6 +48,8 @@ img_1 = harris.drawDots(img_1_cy, pairs[0][20:100])
 img_2 = harris.drawDots(img_2_cy, pairs[1][20:100])
 cv2.imwrite('img_1_pair.jpg', img_1)
 cv2.imwrite('img_2_pair.jpg', img_2)
+matching.drawMatchLine(img_1, img_2, pairs[0][20:100], pairs[1][20:100])
+#cv2.imwrite('img_matching_line.jpg')
 
 ### run RANSAC
 ### pairs = [ points_1, points_2 ]
