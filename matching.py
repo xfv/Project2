@@ -20,23 +20,21 @@ def findMinArg(xy_1, features_1, xy_2, features_2):
         diff = diff**2
         diff = np.sum(diff, 1)
         min_arg = np.argmin(diff)
-        arg[min_arg] = f
+        arg[f] = min_arg
     return arg
      
 def find_pair_2(xy_1, features_1, xy_2, features_2):
-        arg_1 = findMinArg(xy_1, features_1, xy_2, features_2)
-        arg_2 = findMinArg(xy_2, features_2, xy_1, features_1)
+        arg_2 = findMinArg(xy_1, features_1, xy_2, features_2)
+        arg_1 = findMinArg(xy_2, features_2, xy_1, features_1)
         pair_1 = []
         pair_2 = []
 
         for i in arg_1:
-            if arg_1[i] not in arg_2:
-                continue
             if i == arg_2[arg_1[i]]:
                 pair_1.append( xy_1[i] )
                 pair_2.append( xy_2[arg_1[i]] )
 
-        return np.array([pair_1, pair_2])
+        return np.array([pair_1, pair_2], dtype='uint32')
 
 def find_pair(xy_1, features_1, xy_2, features_2):
     value = {}

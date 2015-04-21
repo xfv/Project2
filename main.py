@@ -8,8 +8,8 @@ import ransac
 
 ### main function for panorama
 print 'reading files..'
-img_1 = harris.readFile('./sample/parrington/prtn13.jpg')
-img_2 = harris.readFile('./sample/parrington/prtn12.jpg')
+img_1 = harris.readFile('./parrington/prtn13.jpg')
+img_2 = harris.readFile('./parrington/prtn12.jpg')
 
 
 ### correction
