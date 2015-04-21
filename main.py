@@ -46,7 +46,7 @@ pairs = matching.find_pair_2(points_1, feature_1, points_2, feature_2)
 print 'Got ', len(pairs[0]), ' pairs'
 start = 0 
 end = 250
-print pairs[0][start:end], pairs[1][start:end]
+#print pairs[0][start:end], pairs[1][start:end]
 
 img_1 = harris.drawDots(img_1_cy, pairs[0][start:end])
 img_2 = harris.drawDots(img_2_cy, pairs[1][start:end])
