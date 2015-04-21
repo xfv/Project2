@@ -50,12 +50,14 @@ pairs = matching.find_pair(points_1, feature_1, points_2, feature_2)
 print 'RANSAC...'
 pairs = ransac.ransac(pairs[0], pairs[1])
 
-#print pairs[0].shape
-img_1 = harris.drawDots(img_1_cy, pairs[0][20:100])
-img_2 = harris.drawDots(img_2_cy, pairs[1][20:100])
+print pairs[0].shape
+p1 = pairs[0]
+p2 = pairs[1]
+img_1 = harris.drawDots(img_1_cy, p1)
+img_2 = harris.drawDots(img_2_cy, p2)
 cv2.imwrite('img_1_pair.jpg', img_1)
 cv2.imwrite('img_2_pair.jpg', img_2)
-matching.drawMatchLine(img_1, img_2, pairs[0][20:100], pairs[1][20:100])
+matching.drawMatchLine(img_1, img_2, p1, p2)
 #cv2.imwrite('img_matching_line.jpg')
 
 

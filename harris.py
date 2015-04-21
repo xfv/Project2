@@ -37,7 +37,7 @@ def harris(img_y):
 
     sigma   = 0.05       ### sigma for calculating pixel sum
     k       = 0.04      ### empirical constant 0.04-0.06
-    R_min   = 100000       ### threshold for harris corner detector
+    R_min   = 200000       ### threshold for harris corner detector
 
     ### need gray scale only
     #img_y = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
@@ -97,10 +97,10 @@ def harris(img_y):
     ### Generate harris corner image by opencv function
     ### This is for comparison
     ### GoodFeaturesToTrack
-    corners_good = cv2.goodFeaturesToTrack(img_y, 500, 0.0005, 10, None,  None, 3, True, k)
+    corners_good = cv2.goodFeaturesToTrack(img_y, 800, 0.0005, 10, None,  None, 3, True, k)
     corners_good = numpy.reshape(corners_good, (len(corners_good), 2) )
 
-    return corners 
+    return corners_good 
 
 
 
@@ -115,6 +115,4 @@ if __name__ == "__main__":
     img_bgr = readFile('./sample/cow.jpg')
     img_result = harris(img_bgr)
     cv2.imwrite('corner_harris.jpg', img_result)
-
-
 

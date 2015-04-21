@@ -67,14 +67,18 @@ def drawMatchLine(img_1, img_2, pair_1, pair_2):
     cv2.imwrite('img_matching_line.jpg', img)
 
 def main():
-    xy_1 = np.random.randint(8, size = (10,2))+1
-#xy_2 = np.random.randint(8, size = (10,2))
-    xy_2 = xy_1
+    xy_1 = np.random.randint(5, size = (10,2))+2
+    xy_2 = np.random.randint(5, size = (10,2))+2
+    print xy_1
+    print xy_2
     img = np.random.random((15,15))
     features_1 = descriptor(img, xy_1)
     features_2 = descriptor(img, xy_2)
     pair_1, pair_2 = find_pair(xy_1, features_1, xy_2, features_2)
+    print pair_1
+    print pair_2
     x = solve_M(pair_1, pair_2)
+    
 
 if __name__ == '__main__':
     main() 
