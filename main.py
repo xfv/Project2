@@ -40,6 +40,7 @@ print 'getting features...'
 feature_1 = matching.descriptor(img_1_gray, points_1)
 feature_2 = matching.descriptor(img_2_gray, points_2)
 
+
 print 'matching...'
 pairs = matching.find_pair_2(points_1, feature_1, points_2, feature_2)
 print 'Got ', len(pairs[0]), ' pairs'
@@ -49,6 +50,7 @@ print pairs[0][start:end], pairs[1][start:end]
 
 img_1 = harris.drawDots(img_1_cy, pairs[0][start:end])
 img_2 = harris.drawDots(img_2_cy, pairs[1][start:end])
+
 cv2.imwrite('img_1_pair.jpg', img_1)
 cv2.imwrite('img_2_pair.jpg', img_2)
 img_match = matching.drawMatchLine(img_1, img_2, pairs[0][start:end], pairs[1][start:end])
