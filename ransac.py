@@ -13,7 +13,7 @@ def ransac(points_1, points_2):
     ### parameters
     k = 2       ### only need four points to solve 2*2 matrix M
     n = 50000    ### iterations
-    th = 55     ### threshold
+    th = 18     ### threshold
 
     ### dimension
     len_1 = len(points_1)
@@ -24,6 +24,7 @@ def ransac(points_1, points_2):
     ### main loop
     random.seed()
     inlier = numpy.array([])    ### this is the index of inliers
+    selected = numpy.zeros((k*2,2))
     selected_1 = numpy.zeros((k, 2))
     selected_2 = numpy.zeros((k, 2))
 
@@ -31,8 +32,9 @@ def ransac(points_1, points_2):
 
         ### pick k random feature points
         for i in range(k):
-            selected_1[i] = points_1[random.randrange(len_1)]
-            selected_2[i] = points_2[random.randrange(len_2)]
+            rand = random.randrange(len_1)
+            selected_1[i] = points_1[rand]
+            selected_2[i] = points_2[rand]
         
         ### calculate Homography for these four points
         homo = matching.solve_M(selected_1, selected_2)
@@ -43,6 +45,8 @@ def ransac(points_1, points_2):
         tmp_inlier = numpy.transpose( (distance<th).nonzero() )
         if len(tmp_inlier) > len(inlier):
             inlier = tmp_inlier
+            selected = numpy.append(selected_1, selected_2, 0) 
+            homo_match = homo
 
 
 #print inlier
@@ -53,6 +57,9 @@ def ransac(points_1, points_2):
     result_1 = numpy.reshape(result_1, (len(result_1), 2))
     result_2 = numpy.reshape(result_2, (len(result_2), 2))
     
+    print selected
+    print homo_match
+    print result_1, result_2
 
     return result_1, result_2 
         
