@@ -21,11 +21,23 @@ def drawDots(img, dots):
 ### check border
 def checkNeighbor(points, x_max, y_max):
     result = numpy.copy(points)
+    idx_del = []
+    ### percentage of frame valid
+    range_x = 0.8
+    range_y = 0.8
+
+    x_min = x_max * (1-range_x) / 2
+    y_min = y_max * (1-range_y) / 2
+    ### collect points too near to border
     for i in range(len(points)):
         x = points[i][0]
         y = points[i][1]
-        if x<1 or y<1 or x>x_max-2 or y>y_max-2:
-            numpy.delete(result, i, 0)
+        if x<x_min or y<y_min or x>x_max*(1+range_x)/2 or y>y_max*(1+range_y)/2:
+            idx_del.append(i)
+    ##        print 'delete point ', x, y
+
+    ### delete points
+    result = numpy.delete(result, idx_del, 0)
 
     return result
 
@@ -37,7 +49,8 @@ def harris(img_y):
 
     sigma   = 0.05       ### sigma for calculating pixel sum
     k       = 0.04      ### empirical constant 0.04-0.06
-    R_min   = 10000000       ### threshold for harris corner detector
+    R_min   = 100000       ### threshold for harris corner detector
+    dot_max = 600       ### maximun corners
 
     ### need gray scale only
     #img_y = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)
@@ -89,9 +102,29 @@ def harris(img_y):
 
 
     ### Find corners 
-    corners = numpy.transpose((R>R_min).nonzero())
-    corners = numpy.fliplr(corners)         ### (row, column) = (y, x) so need to switch 
-    corners = checkNeighbor(corners, len(img_y[0]), len(img_y) )
+    ### first use max corners(neglect R_min)
+    R_expand = numpy.ravel(R)
+    corners = numpy.argpartition(R_expand, -dot_max)[-dot_max:]
+    ### corners now is 1-D, not sorted(no need to sort)
+    ### now use corner[dot_max] to check if points are sufficient
+    ### if R[corner] > R_min then points are enough
+    ### if not, then no dot_max points can be found
+    cols = len(R[0])
+    rows = len(R)
+    row_corner = (corners[0])/cols
+    col_corner = corners[0] - row_corner*cols
+    if R[row_corner][col_corner] < R_min:
+        ### this means we should use R_min to get corners
+        corners = numpy.transpose((R>R_min).nonzero())
+        corners = numpy.fliplr(corners)         ### (row, column) = (y, x) so need to switch 
+        print 'harris points not enough... max = ', dot_max, ', got ', len(corners)
+        corners = checkNeighbor(corners, len(img_y[0]), len(img_y) )
+    else:
+        corner_row = corners/cols 
+        corner_col = corners - corner_row*cols 
+        corners = numpy.array([corner_col, corner_row]) ### no need to flip since (col, row) = (x, y)
+        corners = numpy.swapaxes(corners, 0, 1)
+        corners = checkNeighbor(corners, len(img_y[0]), len(img_y))
 
 
     ### Generate harris corner image by opencv function
@@ -100,6 +133,7 @@ def harris(img_y):
     corners_good = cv2.goodFeaturesToTrack(img_y, 500, 0.0005, 10, None,  None, 3, True, k)
     corners_good = numpy.reshape(corners_good, (len(corners_good), 2) )
 
+    
     return corners 
 
 
