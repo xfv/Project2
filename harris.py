@@ -130,7 +130,7 @@ def harris(img_y):
     ### Generate harris corner image by opencv function
     ### This is for comparison
     ### GoodFeaturesToTrack
-    corners_good = cv2.goodFeaturesToTrack(img_y, 500, 0.0005, 10, None,  None, 3, True, k)
+    corners_good = cv2.goodFeaturesToTrack(img_y, 800, 0.0005, 10, None,  None, 3, True, k)
     corners_good = numpy.reshape(corners_good, (len(corners_good), 2) )
 
     
@@ -149,6 +149,4 @@ if __name__ == "__main__":
     img_bgr = readFile('./sample/cow.jpg')
     img_result = harris(img_bgr)
     cv2.imwrite('corner_harris.jpg', img_result)
-
-
 

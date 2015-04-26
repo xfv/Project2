@@ -4,12 +4,12 @@ import cv2
 import projection
 import matching
 import ransac
-
+import assemble
 
 ### main function for panorama
 print 'reading files..'
-img_1 = harris.readFile('./sample/parrington/prtn13.jpg')
-img_2 = harris.readFile('./sample/parrington/prtn12.jpg')
+img_1 = harris.readFile('./parrington/prtn13.jpg')
+img_2 = harris.readFile('./parrington/prtn12.jpg')
 
 
 ### correction
@@ -60,11 +60,13 @@ cv2.imwrite('img_match_line.jpg', img_match)
 ### pairs = [ points_1, points_2 ]
 print 'RANSAC...'
 pairs = ransac.ransac(pairs[0], pairs[1])
+M = matching.solve_M(pairs[0], pairs[1])
 print 'Got ', len(pairs[0]), ' pairs'
 img_1 = harris.drawDots(img_1_cy, pairs[0][start:end])
 img_2 = harris.drawDots(img_2_cy, pairs[1][start:end])
 img_match = matching.drawMatchLine(img_1, img_2, pairs[0], pairs[1])
 cv2.imwrite('img_match_line_2.jpg', img_match)
 
-#print pairs[0].shape
+### run assemble
+assemble.assemble([img_1_cy, img_2_cy], [M])
 
