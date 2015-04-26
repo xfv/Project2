@@ -11,9 +11,9 @@ import random
 def ransac(points_1, points_2):
 
     ### parameters
-    k = 2       ### only need four points to solve 2*2 matrix M
-    n = 50000    ### iterations
-    th = 18     ### threshold
+    k = 3       ### only need four points to solve 2*2 matrix M
+    n = 1000    ### iterations
+    th = 100     ### threshold
 
     ### dimension
     len_1 = len(points_1)
@@ -40,7 +40,8 @@ def ransac(points_1, points_2):
         homo = matching.solve_M(selected_1, selected_2)
 
         ### calculate distance and threshold
-        point_solved = numpy.inner(points_2, homo)
+        const_term = numpy.ones((len(points_2),1))
+        point_solved = numpy.inner(numpy.concatenate((points_2,const_term),1), homo)
         distance = numpy.sum( (point_solved-points_1)**2, 1 ) 
         tmp_inlier = numpy.transpose( (distance<th).nonzero() )
         if len(tmp_inlier) > len(inlier):
