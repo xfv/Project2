@@ -50,7 +50,7 @@ def harris(img_y):
     sigma   = 0.05       ### sigma for calculating pixel sum
     k       = 0.04      ### empirical constant 0.04-0.06
     R_min   = 100000       ### threshold for harris corner detector
-    dot_max = 600       ### maximun corners
+    dot_max = 860       ### maximun corners
 
     ### need gray scale only
     #img_y = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2GRAY)

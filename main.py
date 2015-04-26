@@ -68,5 +68,5 @@ img_match = matching.drawMatchLine(img_1, img_2, pairs[0], pairs[1])
 cv2.imwrite('img_match_line_2.jpg', img_match)
 
 ### run assemble
-assemble.assemble([img_1_cy, img_2_cy], [M])
+#assemble.assemble([img_1_cy, img_2_cy], [M])
 
