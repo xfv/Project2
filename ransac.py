@@ -11,8 +11,8 @@ import random
 def ransac(points_1, points_2):
 
     ### parameters
-    k = 3       ### only need four points to solve 2*2 matrix M
-    n = 1000    ### iterations
+    k = 3       ### only need three points to solve 2*2 matrix M
+    n = 10000    ### iterations
     th = 100     ### threshold
 
     ### dimension
@@ -58,9 +58,9 @@ def ransac(points_1, points_2):
     result_1 = numpy.reshape(result_1, (len(result_1), 2))
     result_2 = numpy.reshape(result_2, (len(result_2), 2))
     
-    print selected
-    print homo_match
-    print result_1, result_2
+    #print selected
+    #print homo_match
+    #print result_1, result_2
 
     return result_1, result_2 
         
