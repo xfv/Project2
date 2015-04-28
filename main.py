@@ -10,7 +10,7 @@ import assemble
 print 'reading files..'
 img = []
 M = []
-data_set = 3
+data_set = 4
 for i in range(data_set,-1,-1):
     print 'loading', i
     img.append(harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg'))
@@ -56,12 +56,11 @@ for i in range(data_set):
     pairs = ransac.ransac(pairs[0], pairs[1])
     tmp_M = matching.solve_M(pairs[0], pairs[1])
     tmp_M = numpy.concatenate((tmp_M, numpy.array([0,0,1]).reshape(1,3)), 0) # Extend M to 3x3 matrix
-    if i==0:
+    if i == 0:
         M.append(tmp_M)
-        print M[i]
     else:
+        print numpy.matrix(tmp_M)*numpy.matrix(M[i-1])
         M.append(numpy.matrix(tmp_M)*numpy.matrix(M[i-1]))
-        print M[i]
     print 'Got ', len(pairs[0]), ' pairs'
 
 ### run assemble
