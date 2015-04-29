@@ -10,7 +10,7 @@ import assemble
 print 'reading files..'
 img = []
 M = []
-data_set = 1
+data_set = 17
 for i in range(data_set,-1,-1):
     print 'loading', i
     img.append(harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg'))
@@ -44,7 +44,7 @@ for i in range(data_set):
     feature_2 = matching.descriptor(img_2_gray, points_2)
     
     print 'matching...'
-    pairs = matching.find_pair_2(points_1, feature_1, points_2, feature_2)
+    pairs = matching.find_pair(points_1, feature_1, points_2, feature_2)
     print 'Got ', len(pairs[0]), ' pairs'
 #   start = 0 
 #   end = 250
