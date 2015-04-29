@@ -16,10 +16,14 @@ def drift(M_list):
     ### calculate drift
     ### initial point (0, 0, 1)
     origin = numpy.zeros((2, 1))
-    x_drift = 0         ### total x_drift
+    ### note M is 3x3
+    origin = numpy.dot(M, numpy.append(origin, [[1]], 0))
+    x_drift = origin[0]         ### total x_drift
+    '''
     for M in M_list:
         origin = numpy.dot(M, numpy.append(origin, [[1]], 0))
         x_drift += (numpy.dot(M, numpy.array([[0],[0],[1]])))[0]
+    '''
     ### now origin is the point after homography of M_list
     y_drift = origin[1]     ### total drift
     x_coef = -y_drift/x_drift    ### spread total drift to x
