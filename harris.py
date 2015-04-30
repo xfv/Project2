@@ -134,7 +134,7 @@ def harris(img_y):
     corners_good = numpy.reshape(corners_good, (len(corners_good), 2) )
 
     
-    return corners 
+    return corners
 
 
 
