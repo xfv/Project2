@@ -59,8 +59,7 @@ for i in range(data_set):
     cv2.imwrite('match_line'+str(i)+'.jpg', img_matching )
     tmp_M = matching.solve_M(pairs[0], pairs[1])
     tmp_M = numpy.concatenate((tmp_M, numpy.array([0,0,1]).reshape(1,3)), 0) # Extend M to 3x3 matrix
-    M.append(tmp_M)
-    
+    #M.append(tmp_M)
     if i == 0:
         M.append(tmp_M)
         print 'M ', i
@@ -72,10 +71,15 @@ for i in range(data_set):
         print numpy.dot(M[i-1], tmp_M)
         M.append( numpy.dot(M[i-1], tmp_M) )
         #M.append(numpy.matrix(tmp_M)*numpy.matrix(M[i-1]))
-        
     print 'Got ', len(pairs[0]), ' pairs'
+
+
 
 #M = drift(M);
 ### run assemble
-assemble.assemble(img, M)
+img_para = assemble.assemble(img, M)
+img_final = drift(img_para, M[-1])
+cv2.imwrite('drift.jpg', img_final)
+
+
 

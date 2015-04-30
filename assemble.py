@@ -94,6 +94,8 @@ def assemble(img_bgr, M):
         cv2.imshow('warp img', warp_img_bgr)
         cv2.waitKey(0)
         panorama[y_begin:y_end+1, x_begin:x_end+1, :] += warp_img_bgr*w2
+        cv2.imwrite('panorama'+str(i)+'.jpg', panorama)
     cv2.imwrite('panorama.jpg', panorama) 
+    return panorama
 
 
