@@ -13,7 +13,7 @@ print 'reading files..'
 img = []
 img_cy = []
 M = []
-data_set = 2
+data_set = 18 
 for i in range(data_set,-1,-1):
     print 'loading', i
     img_read = harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg')
@@ -80,7 +80,7 @@ for i in range(data_set):
 
 
 ### run assemble
-img_pano = assemble.assemble(img, M)
+img_pano = assemble.assemble(img_cy, M)
 '''
 ### run poisson blending
 ### get mask
