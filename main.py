@@ -5,16 +5,21 @@ import projection
 import matching
 import ransac
 import assemble
+from poisson import poisson
 from drift import drift
 
 ### main function for panorama
 print 'reading files..'
 img = []
+img_cy = []
 M = []
-data_set = 18
+data_set = 2
 for i in range(data_set,-1,-1):
     print 'loading', i
-    img.append(harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg'))
+    img_read = harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg')
+    img.append(img_read)
+    print 'cyCorrect', i
+    img_cy.append(projection.cyCorrect(img_read, 704.0))
 
 for i in range(data_set):
     print i
@@ -22,8 +27,8 @@ for i in range(data_set):
     print 'cyCorrect'
     img_1 = img[i]
     img_2 = img[i+1]
-    img_1_cy = projection.cyCorrect(img_1, 704.289)
-    img_2_cy = projection.cyCorrect(img_2, 704.0)
+    img_1_cy = img_cy[i]
+    img_2_cy = img_cy[i+1]
     
     ### get gray scale
     img_1_gray = cv2.cvtColor(img_1_cy, cv2.COLOR_BGR2GRAY)
@@ -74,11 +79,18 @@ for i in range(data_set):
     print 'Got ', len(pairs[0]), ' pairs'
 
 
-
-#M = drift(M);
 ### run assemble
-img_para = assemble.assemble(img, M)
-img_final = drift(img_para, M[-1])
+img_pano = assemble.assemble(img, M)
+'''
+### run poisson blending
+### get mask
+print img[0].shape
+mask = numpy.ones((len(img[0]), len(img[0][0]), 3)) 
+mask = projection.cyCorrect(mask, 704.0)[:, :, 0]
+print mask.shape
+'''
+#img_pano = poisson(img_cy, M, mask)
+img_final = drift(img_pano, M[-1])
 cv2.imwrite('drift.jpg', img_final)
 
 
