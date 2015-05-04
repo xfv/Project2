@@ -128,7 +128,7 @@ def poisson(img_bgr, M, mask):
 
     
     ### image blending 
-    pwarp_img_bgr = np.zeros(mask_xor[0].shape)
+    pwarp_img_bgr = np.zeros(mask_xor[0].shape, dtype='float64')
     for i in range(len(img_bgr)):
         y_begin, y_end, x_begin, x_end = position[i]
         ### directly paste first image
@@ -137,6 +137,7 @@ def poisson(img_bgr, M, mask):
             panorama[y_begin:y_end+1, x_begin:x_end+1, 1] = img_bgr[i][:, :, 1] * mask_xor[0]
             panorama[y_begin:y_end+1, x_begin:x_end+1, 2] = img_bgr[i][:, :, 2] * mask_xor[0]
             pwarp_img_bgr = img_bgr[i]
+            pwarp_img_bgr = pwarp_img_bgr.astype('float64')
             continue
 
 
@@ -195,8 +196,20 @@ def poisson(img_bgr, M, mask):
         ### poisson blending
         ### first cut the overlay block
         overlay_bgr = warp_img_bgr[y_begin:y_end, x_begin:x_end, :]
+        print overlay_bgr.dtype
         poverlay_bgr = pwarp_img_bgr[py_begin:py_end, px_begin:px_end, :]
+        print poverlay_bgr.dtype
         mask_overlay = mask_and[i-1][y_begin:y_end, x_begin:x_end]
+        cv2.imshow('img', overlay_bgr.astype('uint8'))
+        cv2.waitKey(0)
+        cv2.imshow('img', poverlay_bgr.astype('uint8'))
+        cv2.waitKey(0)
+        tmp_overlay = np.copy(overlay_bgr)
+        tmp_overlay[:, :, 0] *= mask_overlay
+        tmp_overlay[:, :, 1] *= mask_overlay
+        tmp_overlay[:, :, 2] *= mask_overlay
+        cv2.imshow('img', tmp_overlay.astype('uint8'))
+        cv2.waitKey(0)
         print 'shape'
         print mask_and[i-1].shape
         print position[i-1]
@@ -215,9 +228,9 @@ def poisson(img_bgr, M, mask):
             print rows, cols
             A = scipy.sparse.identity(rows*cols, format='lil')
             #A = np.zeros((rows*cols, rows*cols))
-            B = np.zeros(rows*cols) 
-            #P = pyamg.gallery.poisson(overlay.shape)
-            #B = P * overlay.flatten()
+            #B = np.zeros(rows*cols) 
+            P = pyamg.gallery.poisson(overlay.shape)
+            B = P * overlay.flatten()
             ### fill in A
             for row in range(rows):
                 #print row
@@ -236,9 +249,11 @@ def poisson(img_bgr, M, mask):
                             fq = overlay[row-1, col]
                             gq = poverlay[row-1, col]
                             if( mask_overlay[row-1, col] ):
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
+                                #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
+                                Vpq += fp-fq
                             else:
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)<(fp-fq)]
+                                #Vpq += (fp-fq, gp-gq)[col<cols/2]
+                                Vpq += fp-fq
                             #Vpq += fp-fq
                             neighbor[0] = -1
                             Np += 1
@@ -248,9 +263,11 @@ def poisson(img_bgr, M, mask):
                             gq = poverlay[row+1, col]
                             #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
                             if( mask_overlay[row-1, col] ):
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
+                                #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
+                                Vpq += fp-fq
                             else:
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)<(fp-fq)]
+                                #Vpq += (fp-fq, gp-gq)[col<cols/2]
+                                Vpq += fp-fq
                             #Vpq += fp-fq
                             neighbor[1] = -1
                             Np += 1
@@ -260,9 +277,11 @@ def poisson(img_bgr, M, mask):
                             gq = poverlay[row, col+1]
                             #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
                             if( mask_overlay[row-1, col] ):
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
+                                #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
+                                Vpq += fp-fq
                             else:
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)<(fp-fq)]
+                                #Vpq += (fp-fq, gp-gq)[col<cols/2]
+                                Vpq += fp-fq
                             #Vpq += fp-fq
                             neighbor[2] = -1
                             Np += 1
@@ -272,16 +291,20 @@ def poisson(img_bgr, M, mask):
                             gq = poverlay[row, col-1]
                             #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
                             if( mask_overlay[row-1, col] ):
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
+                                #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
+                                Vpq += fp-fq
                             else:
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)<(fp-fq)]
+                                #Vpq += (fp-fq, gp-gq)[col/cols/2]
+                                Vpq += fp-fq
                             #Vpq += fp-fq
                             neighbor[3] = -1
                             Np += 1
                         ### fill the coefficients
                         #print 'filling A'
+                        Np = 4
+                        neighbor = [-1, -1, -1, -1]
                         line = row*cols+col
-                        A[line, row*cols+col] = 4 
+                        A[line, row*cols+col] = Np 
                         A[line, (row-1)*cols+col] += neighbor[0]
                         A[line, (row+1)*cols+col] += neighbor[1]
                         A[line, row*cols+col+1] += neighbor[2]
@@ -295,7 +318,7 @@ def poisson(img_bgr, M, mask):
 
             print 'solving'
             A = A.tocsr()
-            result = pyamg.solve(A, B, verb=True, tol=1e-2)
+            result = pyamg.solve(A, B, verb=True, tol=1e-8)
             print np.amax(result)
             result[result>255] = 255
             result[result<0] = 0

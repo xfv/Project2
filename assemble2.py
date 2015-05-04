@@ -77,9 +77,9 @@ def assemble_2(img_bgr, M, mask):
     mask_and = [] ### mask for image overlay, starting from img1(overlay with 0)
     y_begin, y_end, x_begin, x_end = position[0]
     ny_begin, ny_end, nx_begin, nx_end = position[1]
-    mask_test = np.copy(panorama)
-    mask_test[y_begin:y_end+1, x_begin:x_end+1, 0] = 255*warp_mask[0]
-    mask_test[ny_begin:ny_end+1, nx_begin:nx_end+1, 1] = 255*warp_mask[1]
+    #mask_test = np.copy(panorama)
+    #mask_test[y_begin:y_end+1, x_begin:x_end+1, 0] = 255*warp_mask[0]
+    #mask_test[ny_begin:ny_end+1, nx_begin:nx_end+1, 1] = 255*warp_mask[1]
     #cv2.imshow('mask', mask_test)
     #cv2.waitKey(0)
 
@@ -176,19 +176,25 @@ def assemble_2(img_bgr, M, mask):
         if( position[i-1][0] > position[i][0] ):
             py_begin    = 0 
             y_begin     = position[i-1][0] - position[i][0]
+            oy_begin    = position[i-1][0]
         else:
             py_begin    = position[i][0] - position[i-1][0]
             y_begin     = 0
+            oy_begin    = position[i][0]
         if( position[i-1][1] > position[i][1] ):
             py_end      = position[i][1] - position[i-1][0]
             y_end       = position[i][1] - position[i][0]
+            oy_end      = position[i][1]
         else:
             py_end      = position[i-1][1] -position[i-1][0]
             y_end       = position[i-1][1] - position[i][0]
+            oy_end      = position[i-1][1]
         px_begin    = position[i][2] - position[i-1][2]
         px_end      = position[i-1][3] - position[i-1][2]
         x_begin     = 0
         x_end       = position[i-1][3] - position[i][2]
+        ox_begin    = position[i][2]
+        ox_end      = position[i-1][3]
 
         ### poisson blending
         ### first cut the overlay block
@@ -205,7 +211,7 @@ def assemble_2(img_bgr, M, mask):
         overlay_bgr[:, :, 1] *= mask_overlay
         overlay_bgr[:, :, 2] *= mask_overlay
 
-        panorama[py_begin:py_end, px_begin:px_end, :] += overlay_bgr 
+        panorama[oy_begin:oy_end, ox_begin:ox_end, :] += overlay_bgr 
         cv2.imwrite('panorama'+str(i)+'.jpg', panorama) 
         ### save current warp image
         pwarp_img_bgr = warp_img_bgr
