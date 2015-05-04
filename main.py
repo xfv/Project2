@@ -5,6 +5,7 @@ import projection
 import matching
 import ransac
 import assemble
+from assemble2 import assemble_2
 from poisson import poisson
 from drift import drift
 
@@ -13,7 +14,7 @@ print 'reading files..'
 img = []
 img_cy = []
 M = []
-data_set = 18 
+data_set = 1 
 for i in range(data_set,-1,-1):
     print 'loading', i
     img_read = harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg')
@@ -79,17 +80,18 @@ for i in range(data_set):
     print 'Got ', len(pairs[0]), ' pairs'
 
 
-### run assemble
-img_pano = assemble.assemble(img_cy, M)
-'''
+
 ### run poisson blending
 ### get mask
 print img[0].shape
 mask = numpy.ones((len(img[0]), len(img[0][0]), 3)) 
 mask = projection.cyCorrect(mask, 704.0)[:, :, 0]
 print mask.shape
-'''
-#img_pano = poisson(img_cy, M, mask)
+### run assemble
+#img_pano = assemble_2(img_cy, M, mask)
+#cv2.imwrite('assemble_2.jpg', img_pano)
+img_pano = poisson(img_cy, M, mask)
+
 img_final = drift(img_pano, M[-1])
 cv2.imwrite('drift.jpg', img_final)
 

@@ -1,12 +1,10 @@
 import numpy as np
-import pyamg
 import math
 import cv2
-import scipy.sparse
 
 ### poisson blending
 ### mostly copied from assemble
-def poisson(img_bgr, M, mask):
+def assemble_2(img_bgr, M, mask):
     rows, cols, ch = img_bgr[0].shape
     # Handling panorama boudaries
     x_max = cols
@@ -126,9 +124,10 @@ def poisson(img_bgr, M, mask):
             mask_xor.append(tmp_mask)
 
 
-    
+
+
     ### image blending 
-    pwarp_img_bgr = np.zeros(mask_xor[0].shape)
+    pwarp_img_bgr = np.zeros(mask_xor[0].shape) ### save previous warp image
     for i in range(len(img_bgr)):
         y_begin, y_end, x_begin, x_end = position[i]
         ### directly paste first image
@@ -136,7 +135,7 @@ def poisson(img_bgr, M, mask):
             panorama[y_begin:y_end+1, x_begin:x_end+1, 0] = img_bgr[i][:, :, 0] * mask_xor[0]
             panorama[y_begin:y_end+1, x_begin:x_end+1, 1] = img_bgr[i][:, :, 1] * mask_xor[0]
             panorama[y_begin:y_end+1, x_begin:x_end+1, 2] = img_bgr[i][:, :, 2] * mask_xor[0]
-            pwarp_img_bgr = img_bgr[i]
+            pwarp_img_bgr = img_bgr[i] 
             continue
 
 
@@ -173,7 +172,7 @@ def poisson(img_bgr, M, mask):
         '''
         ### calculate coordinate of overlay area
         ### no_prefix: current image
-        ### p        : panorama
+        ### p        : previous image
         if( position[i-1][0] > position[i][0] ):
             py_begin    = 0 
             y_begin     = position[i-1][0] - position[i][0]
@@ -191,119 +190,25 @@ def poisson(img_bgr, M, mask):
         x_begin     = 0
         x_end       = position[i-1][3] - position[i][2]
 
- 
         ### poisson blending
         ### first cut the overlay block
         overlay_bgr = warp_img_bgr[y_begin:y_end, x_begin:x_end, :]
         poverlay_bgr = pwarp_img_bgr[py_begin:py_end, px_begin:px_end, :]
         mask_overlay = mask_and[i-1][y_begin:y_end, x_begin:x_end]
-        print 'shape'
-        print mask_and[i-1].shape
-        print position[i-1]
-        print position[i]
-        print overlay_bgr.shape, poverlay_bgr.shape, mask_overlay.shape
+        pweight_mask = np.mgrid[1:0:complex(x_end-x_begin), 0:3]
+        weight_mask = np.mgrid[0:1:complex(x_end-x_begin), 0:3]
+        pweight_mask = np.tile(pweight_mask[0], (y_end-y_begin, 1, 1))
+        weight_mask = np.tile(weight_mask[0], (y_end-y_begin, 1, 1))
+        overlay_bgr = poverlay_bgr*pweight_mask + overlay_bgr*weight_mask
+        #overlay_bgr = poverlay_bgr*pweight_mask 
+        overlay_bgr[:, :, 0] *= mask_overlay
+        overlay_bgr[:, :, 1] *= mask_overlay
+        overlay_bgr[:, :, 2] *= mask_overlay
 
-        ### performed on 3 channel seperately
-        for c in range(3):
-            overlay = overlay_bgr[:, :, c]
-            poverlay = poverlay_bgr[:, :, c]
-            
-            rows = len(overlay)
-            cols = len(overlay[0])
-            ### fill in Ax = b and solve x
-            print 'size'
-            print rows, cols
-            A = scipy.sparse.identity(rows*cols, format='lil')
-            #A = np.zeros((rows*cols, rows*cols))
-            B = np.zeros(rows*cols) 
-            #P = pyamg.gallery.poisson(overlay.shape)
-            #B = P * overlay.flatten()
-            ### fill in A
-            for row in range(rows):
-                #print row
-                for col in range(cols):
-                    #print col
-                    Vpq = 0.0
-                    Np = 0     ### neighbor count
-                    neighbor = [0, 0, 0, 0] ### up, down, right, left
-                    if(mask_overlay[row, col]):
-                        fp = overlay[row, col]
-                        gp = poverlay[row, col]
-                        ### inside mask
-                        ### get difference that is larger
-                        if( row>0 ):
-                            ### has up neighbor
-                            fq = overlay[row-1, col]
-                            gq = poverlay[row-1, col]
-                            if( mask_overlay[row-1, col] ):
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            else:
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)<(fp-fq)]
-                            #Vpq += fp-fq
-                            neighbor[0] = -1
-                            Np += 1
-                        if( row<rows-1 ):
-                            ### has down neighbor
-                            fq = overlay[row+1, col]
-                            gq = poverlay[row+1, col]
-                            #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            if( mask_overlay[row-1, col] ):
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            else:
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)<(fp-fq)]
-                            #Vpq += fp-fq
-                            neighbor[1] = -1
-                            Np += 1
-                        if( col<cols-1 ):
-                            ### has right neighbor
-                            fq = overlay[row, col+1]
-                            gq = poverlay[row, col+1]
-                            #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            if( mask_overlay[row-1, col] ):
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            else:
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)<(fp-fq)]
-                            #Vpq += fp-fq
-                            neighbor[2] = -1
-                            Np += 1
-                        if( col>0 ):
-                            ### has left neighbor
-                            fq = overlay[row, col-1]
-                            gq = poverlay[row, col-1]
-                            #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            if( mask_overlay[row-1, col] ):
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            else:
-                                Vpq += (fp-fq, gp-gq)[(gp-gq)<(fp-fq)]
-                            #Vpq += fp-fq
-                            neighbor[3] = -1
-                            Np += 1
-                        ### fill the coefficients
-                        #print 'filling A'
-                        line = row*cols+col
-                        A[line, row*cols+col] = 4 
-                        A[line, (row-1)*cols+col] += neighbor[0]
-                        A[line, (row+1)*cols+col] += neighbor[1]
-                        A[line, row*cols+col+1] += neighbor[2]
-                        A[line, row*cols+col-1] += neighbor[3]
-                        #B[row*cols+col] = Vpq
-                    else:
-                        ### not inside mask
-                        #A[row*cols+col] = 1
-                        B[row*cols+col] = poverlay[row, col] 
-                        #print 'else'
-
-            print 'solving'
-            A = A.tocsr()
-            result = pyamg.solve(A, B, verb=True, tol=1e-2)
-            print np.amax(result)
-            result[result>255] = 255
-            result[result<0] = 0
-            #err, result = cv2.solve(A, B, None, cv2.DECOMP_SVD)       
-            print py_begin-py_end, px_begin-px_end
-            panorama[py_begin:py_end, px_begin:px_end, c] = np.reshape(result, (rows, cols))
-        pwarp_img_bgr = warp_img_bgr
+        panorama[py_begin:py_end, px_begin:px_end, :] += overlay_bgr 
         cv2.imwrite('panorama'+str(i)+'.jpg', panorama) 
+        ### save current warp image
+        pwarp_img_bgr = warp_img_bgr
                        
                             
     cv2.imwrite('panorama.jpg', panorama) 
