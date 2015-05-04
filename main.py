@@ -14,7 +14,7 @@ print 'reading files..'
 img = []
 img_cy = []
 M = []
-data_set = 1 
+data_set = 7 
 for i in range(data_set,-1,-1):
     print 'loading', i
     img_read = harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg')
@@ -51,7 +51,7 @@ for i in range(data_set):
     feature_2 = matching.descriptor(img_2_gray, points_2)
     
     print 'matching...'
-    pairs = matching.find_pair_2(points_1, feature_1, points_2, feature_2)
+    pairs = matching.find_pair(points_1, feature_1, points_2, feature_2)
     print 'Got ', len(pairs[0]), ' pairs'
     start = 0 
     end = 250
@@ -88,12 +88,11 @@ mask = numpy.ones((len(img[0]), len(img[0][0]), 3))
 mask = projection.cyCorrect(mask, 704.0)[:, :, 0]
 print mask.shape
 ### run assemble
-#img_pano = assemble_2(img_cy, M, mask)
+img_pano = assemble_2(img_cy, M, mask)
 #cv2.imwrite('assemble_2.jpg', img_pano)
-img_pano = poisson(img_cy, M, mask)
+#img_pano = poisson(img_cy, M, mask)
 
 img_final = drift(img_pano, M[-1])
 cv2.imwrite('drift.jpg', img_final)
-
 
 
