@@ -75,8 +75,8 @@ def assemble_2(img_bgr, M, mask):
         
     mask_xor = [] ### mask for current image, starting from img0
     mask_and = [] ### mask for image overlay, starting from img1(overlay with 0)
-    y_begin, y_end, x_begin, x_end = position[0]
-    ny_begin, ny_end, nx_begin, nx_end = position[1]
+    #y_begin, y_end, x_begin, x_end = position[0]
+    #ny_begin, ny_end, nx_begin, nx_end = position[1]
     #mask_test = np.copy(panorama)
     #mask_test[y_begin:y_end+1, x_begin:x_end+1, 0] = 255*warp_mask[0]
     #mask_test[ny_begin:ny_end+1, nx_begin:nx_end+1, 1] = 255*warp_mask[1]
@@ -173,6 +173,7 @@ def assemble_2(img_bgr, M, mask):
         ### calculate coordinate of overlay area
         ### no_prefix: current image
         ### p        : previous image
+        ### o        : panorama
         if( position[i-1][0] > position[i][0] ):
             py_begin    = 0 
             y_begin     = position[i-1][0] - position[i][0]

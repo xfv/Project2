@@ -248,13 +248,14 @@ def poisson(img_bgr, M, mask):
                             ### has up neighbor
                             fq = overlay[row-1, col]
                             gq = poverlay[row-1, col]
-                            if( mask_overlay[row-1, col] ):
+                            #if( mask_overlay[row-1, col] ):
                                 #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                                Vpq += fp-fq
-                            else:
+                                #Vpq += fp-fq
+                            #else:
                                 #Vpq += (fp-fq, gp-gq)[col<cols/2]
-                                Vpq += fp-fq
+                                #Vpq += fp-fq
                             #Vpq += fp-fq
+                            Vpq += gp-gq
                             neighbor[0] = -1
                             Np += 1
                         if( row<rows-1 ):
@@ -262,13 +263,14 @@ def poisson(img_bgr, M, mask):
                             fq = overlay[row+1, col]
                             gq = poverlay[row+1, col]
                             #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            if( mask_overlay[row-1, col] ):
+                            #if( mask_overlay[row-1, col] ):
                                 #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                                Vpq += fp-fq
-                            else:
+                                #Vpq += fp-fq
+                            #else:
                                 #Vpq += (fp-fq, gp-gq)[col<cols/2]
-                                Vpq += fp-fq
+                                #Vpq += fp-fq
                             #Vpq += fp-fq
+                            Vpq += gp-gq
                             neighbor[1] = -1
                             Np += 1
                         if( col<cols-1 ):
@@ -276,13 +278,14 @@ def poisson(img_bgr, M, mask):
                             fq = overlay[row, col+1]
                             gq = poverlay[row, col+1]
                             #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            if( mask_overlay[row-1, col] ):
+                            #if( mask_overlay[row-1, col] ):
                                 #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                                Vpq += fp-fq
-                            else:
+                                #Vpq += fp-fq
+                            #else:
                                 #Vpq += (fp-fq, gp-gq)[col<cols/2]
-                                Vpq += fp-fq
+                                #Vpq += fp-fq
                             #Vpq += fp-fq
+                            Vpq += gp-gq
                             neighbor[2] = -1
                             Np += 1
                         if( col>0 ):
@@ -290,13 +293,14 @@ def poisson(img_bgr, M, mask):
                             fq = overlay[row, col-1]
                             gq = poverlay[row, col-1]
                             #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                            if( mask_overlay[row-1, col] ):
+                            #if( mask_overlay[row-1, col] ):
                                 #Vpq += (fp-fq, gp-gq)[(gp-gq)>(fp-fq)]
-                                Vpq += fp-fq
-                            else:
+                                #Vpq += fp-fq
+                            #else:
                                 #Vpq += (fp-fq, gp-gq)[col/cols/2]
-                                Vpq += fp-fq
+                                #Vpq += fp-fq
                             #Vpq += fp-fq
+                            Vpq += gp-gq
                             neighbor[3] = -1
                             Np += 1
                         ### fill the coefficients
