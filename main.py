@@ -4,7 +4,6 @@ import cv2
 import projection
 import matching
 import ransac
-import assemble
 from assemble2 import assemble_2
 from poisson import poisson
 from drift import drift
