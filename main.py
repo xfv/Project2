@@ -14,7 +14,7 @@ print 'reading files..'
 img = []
 img_cy = []
 M = []
-data_set = 16
+data_set = 16 
 #focal = 704.0
 focal = 470.0
 for i in range(data_set,-1,-1):
@@ -93,9 +93,9 @@ mask = numpy.ones((len(img[0]), len(img[0][0]), 3))
 mask = projection.cyCorrect(mask, focal)[:, :, 0]
 print mask.shape
 ### run assemble
-img_pano = assemble_2(img_cy, M, mask)
+#img_pano = assemble_2(img_cy, M, mask)
 #cv2.imwrite('assemble_2.jpg', img_pano)
-#img_pano = poisson(img_cy, M, mask)
+img_pano = poisson(img_cy, M, mask)
 
 img_final = drift(img_pano, M[-1])
 cv2.imwrite('drift.jpg', img_final)

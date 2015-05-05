@@ -356,7 +356,8 @@ def poisson(img_bgr, M, mask):
             result[result<0] = 0
             #err, result = cv2.solve(A, B, None, cv2.DECOMP_SVD)       
             print py_begin-py_end, px_begin-px_end
-            panorama[oy_begin:oy_end, ox_begin:ox_end, c] = np.reshape(result, (rows, cols))
+            panorama[oy_begin:oy_end, ox_begin:ox_end, c] *= (1-mask_overlay) 
+            panorama[oy_begin:oy_end, ox_begin:ox_end, c] += mask_overlay * np.reshape(result, (rows, cols))
         pwarp_img_bgr = warp_img_bgr
         cv2.imwrite('panorama'+str(i)+'.jpg', panorama) 
                        
