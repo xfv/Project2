@@ -68,7 +68,7 @@ def assemble_2(img_bgr, M, mask):
         H[1,2] -= min(d_size_y[0,0], d_size_y[0,1])
         
         d_size = (x_end-x_begin+1, y_end-y_begin+1)
-        warp_mask.append(cv2.warpPerspective(mask, H, d_size))
+        warp_mask.append(cv2.warpPerspective(mask, H, d_size, None, cv2.INTER_NEAREST))
          
         
     mask_xor = [] ### mask for current image, starting from img0
