@@ -15,22 +15,19 @@ img = []
 img_cy = []
 M = []
 data_set = 16 
-#focal = 704.0
 focal = 470.0
 for i in range(data_set,-1,-1):
     print 'loading', i
     #img_read = harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg')
     img_read = harris.readFile('./photo/dataset/6/small/img' + str(i).zfill(2) + '.jpg')
-    cv2.imwrite('test.jpg', img_read)
     
     img.append(img_read)
+    ### correction
     print 'cyCorrect', i
     img_cy.append(projection.cyCorrect(img_read, focal))
 
 for i in range(data_set):
     print i
-    ### correction
-    print 'cyCorrect'
     img_1 = img[i]
     img_2 = img[i+1]
     img_1_cy = img_cy[i]
@@ -60,28 +57,20 @@ for i in range(data_set):
     print 'Got ', len(pairs[0]), ' pairs'
     start = 0 
     end = 250
-#   print pairs[0][start:end], pairs[1][start:end]
     
     ### run RANSAC
     ### pairs = [ points_1, points_2 ]
     print 'RANSAC...'
     pairs = ransac.ransac(pairs[0], pairs[1])
-    img_matching = matching.drawMatchLine(img_1_cy, img_2_cy, pairs[0][start:end], pairs[1][start:end])
-    cv2.imwrite('match_line'+str(i)+'.jpg', img_matching )
+    #img_matching = matching.drawMatchLine(img_1_cy, img_2_cy, pairs[0][start:end], pairs[1][start:end])
+    #cv2.imwrite('match_line'+str(i)+'.jpg', img_matching )
     tmp_M = matching.solve_M(pairs[0], pairs[1])
     tmp_M = numpy.concatenate((tmp_M, numpy.array([0,0,1]).reshape(1,3)), 0) # Extend M to 3x3 matrix
-    #M.append(tmp_M)
     if i == 0:
         M.append(tmp_M)
-        print 'M ', i
-        print tmp_M
     else:
         print 'appending M', i, i-1
-        print tmp_M
-        print numpy.dot(tmp_M, M[i-1])
-        print numpy.dot(M[i-1], tmp_M)
         M.append( numpy.dot(M[i-1], tmp_M) )
-        #M.append(numpy.matrix(tmp_M)*numpy.matrix(M[i-1]))
     print 'Got ', len(pairs[0]), ' pairs'
 
 
@@ -93,11 +82,13 @@ mask = numpy.ones((len(img[0]), len(img[0][0]), 3))
 mask = projection.cyCorrect(mask, focal)[:, :, 0]
 print mask.shape
 ### run assemble
-#img_pano = assemble_2(img_cy, M, mask)
-#cv2.imwrite('assemble_2.jpg', img_pano)
-img_pano = poisson(img_cy, M, mask)
+img_pano_linear = assemble_2(img_cy, M, mask)
+img_pano_linear = drift(img_pano_linear, M[-1])
+cv2.imwrite('pano_linear.jpg', img_pano_linear)
+### run poisson
+img_pano_poisson = poisson(img_cy, M, mask)
+img_pano_poisson = drift(img_pano_poisson, M[-1])
+cv2.imwrite('pano_poisson.jpg', img_pano_poisson)
 
-img_final = drift(img_pano, M[-1])
-cv2.imwrite('drift.jpg', img_final)
 
 

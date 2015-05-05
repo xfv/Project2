@@ -96,7 +96,6 @@ def drawMatchLine(img_1, img_2, pair_1, pair_2):
         pt2 = (pair_2[i][0]+cols, pair_2[i][1])
         cv2.line(img, pt1, pt2, (0,0,255))
     return img
-    #cv2.imwrite('img_matching_line.jpg', img)
 
 def main():
     xy_1 = np.random.randint(5, size = (10,2))+2

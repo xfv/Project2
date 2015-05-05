@@ -50,7 +50,6 @@ def ransac(points_1, points_2):
             homo_match = homo
 
 
-#print inlier
 
     result_1 = points_1[inlier]
     result_2 = points_2[inlier]
@@ -58,14 +57,5 @@ def ransac(points_1, points_2):
     result_1 = numpy.reshape(result_1, (len(result_1), 2))
     result_2 = numpy.reshape(result_2, (len(result_2), 2))
     
-    #print selected
-    #print homo_match
-    #print result_1, result_2
 
     return result_1, result_2 
-        
-
-
-
-
-
