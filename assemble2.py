@@ -152,7 +152,7 @@ def assemble_2(img_bgr, M, mask):
         panorama[y_begin:y_end+1, x_begin:x_end+1, 1] += warp_img_bgr[:, :, 1] * mask_xor[i]
         panorama[y_begin:y_end+1, x_begin:x_end+1, 2] += warp_img_bgr[:, :, 2] * mask_xor[i]
         ### TEST
-        cv2.imwrite('pano_mask'+ str(i) + '.jpg', panorama)
+        cv2.imwrite('pano_mask_2_'+ str(i) + '.jpg', panorama)
         ### calculate coordinate of overlay area
         ### no_prefix: current image
         ### p        : previous image
@@ -183,7 +183,7 @@ def assemble_2(img_bgr, M, mask):
         ### poisson blending
         ### first cut the overlay block
         overlay_bgr = warp_img_bgr[y_begin:y_end, x_begin:x_end, :]
-        poverlay_bgr = pwarp_img_bgr[py_begin:py_end, px_begin:px_end, :]
+        poverlay_bgr = panorama[oy_begin:oy_end, ox_begin:ox_end, :]
         mask_overlay = mask_and[i-1][y_begin:y_end, x_begin:x_end]
         pweight_mask = np.mgrid[1:0:complex(px_end-px_begin), 0:3]
         weight_mask = np.mgrid[0:1:complex(x_end-x_begin), 0:3]
@@ -196,7 +196,13 @@ def assemble_2(img_bgr, M, mask):
         #overlay_bgr[:, :, 1] *= mask_overlay
         #overlay_bgr[:, :, 2] *= mask_overlay
 
-        panorama[oy_begin:oy_end, ox_begin:ox_end, :] = overlay_bgr 
+        
+        panorama[oy_begin:oy_end, ox_begin:ox_end, 0] *= (1 - mask_overlay) 
+        panorama[oy_begin:oy_end, ox_begin:ox_end, 1] *= (1 - mask_overlay) 
+        panorama[oy_begin:oy_end, ox_begin:ox_end, 2] *= (1 - mask_overlay) 
+        panorama[oy_begin:oy_end, ox_begin:ox_end, 0] += mask_overlay * overlay_bgr[:, :, 0] 
+        panorama[oy_begin:oy_end, ox_begin:ox_end, 1] += mask_overlay * overlay_bgr[:, :, 1] 
+        panorama[oy_begin:oy_end, ox_begin:ox_end, 2] += mask_overlay * overlay_bgr[:, :, 2] 
         cv2.imwrite('panorama'+str(i)+'.jpg', panorama) 
         ### save current warp image
         pwarp_img_bgr = warp_img_bgr
