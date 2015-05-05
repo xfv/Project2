@@ -117,7 +117,7 @@ def poisson(img_bgr, M, mask):
             if i != 0:
                 ### first image has no previous 
                 tmp_mask -= mask_and[i-1]
-            tmp_mask[y_begin:y_end, x_begin:x_end] -= ntmp_mask[ny_begin:ny_end, nx_begin:nx_end]
+            #tmp_mask[y_begin:y_end, x_begin:x_end] -= ntmp_mask[ny_begin:ny_end, nx_begin:nx_end]
             mask_xor.append(tmp_mask)
         else:
             ### last image has no next image
@@ -209,7 +209,8 @@ def poisson(img_bgr, M, mask):
         ### first cut the overlay block
         overlay_bgr = warp_img_bgr[y_begin:y_end, x_begin:x_end, :]
         print overlay_bgr.dtype
-        poverlay_bgr = pwarp_img_bgr[py_begin:py_end, px_begin:px_end, :]
+        #poverlay_bgr = pwarp_img_bgr[py_begin:py_end, px_begin:px_end, :]
+        poverlay_bgr = panorama[oy_begin:oy_end, ox_begin:ox_end, :]
         print poverlay_bgr.dtype
         mask_overlay = mask_and[i-1][y_begin:y_end, x_begin:x_end]
         #cv2.imshow('img', overlay_bgr.astype('uint8'))
@@ -247,6 +248,9 @@ def poisson(img_bgr, M, mask):
             for row in range(rows):
                 #print row
                 for col in range(cols):
+                    ### print progress
+                    print "\r",
+                    print str(c) + " " + str(int((row*cols+col)/float(rows*cols)*100)),
                     #print col
                     Vpq = 0
                     Np = 0     ### neighbor count

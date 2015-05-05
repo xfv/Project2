@@ -14,16 +14,18 @@ print 'reading files..'
 img = []
 img_cy = []
 M = []
-data_set = 2
+data_set = 8
+#focal = 704.0
+focal = 410.0
 for i in range(data_set,-1,-1):
     print 'loading', i
-    img_read = harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg')
-    #img_read = harris.readFile('./photo/dataset/1/small/img' + str(i).zfill(2) + '.jpg')
+    #img_read = harris.readFile('./parrington/prtn' + str(i).zfill(2) + '.jpg')
+    img_read = harris.readFile('./photo/dataset/1/small/img' + str(i).zfill(2) + '.jpg')
     cv2.imwrite('test.jpg', img_read)
     
     img.append(img_read)
     print 'cyCorrect', i
-    img_cy.append(projection.cyCorrect(img_read, 704.0))
+    img_cy.append(projection.cyCorrect(img_read, focal))
 
 for i in range(data_set):
     print i
@@ -88,7 +90,7 @@ for i in range(data_set):
 ### get mask
 print img[0].shape
 mask = numpy.ones((len(img[0]), len(img[0][0]), 3)) 
-mask = projection.cyCorrect(mask, 704.0)[:, :, 0]
+mask = projection.cyCorrect(mask, focal)[:, :, 0]
 print mask.shape
 ### run assemble
 #img_pano = assemble_2(img_cy, M, mask)

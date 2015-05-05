@@ -114,7 +114,7 @@ def assemble_2(img_bgr, M, mask):
             if i != 0:
                 ### first image has no previous 
                 tmp_mask -= mask_and[i-1]
-            tmp_mask[y_begin:y_end, x_begin:x_end] -= ntmp_mask[ny_begin:ny_end, nx_begin:nx_end]
+            #tmp_mask[y_begin:y_end, x_begin:x_end] -= ntmp_mask[ny_begin:ny_end, nx_begin:nx_end]
             mask_xor.append(tmp_mask)
         else:
             ### last image has no next image
@@ -143,9 +143,9 @@ def assemble_2(img_bgr, M, mask):
         d_size = (x_end-x_begin+1, y_end-y_begin+1)
         print 'warp img size:', d_size
         warp_img_bgr = np.zeros((y_end-y_begin+1, x_end-x_begin+1, 3))
-        warp_img_bgr[:,:,0] = cv2.warpPerspective(img_bgr[i][:,:,0], H, d_size)
-        warp_img_bgr[:,:,1] = cv2.warpPerspective(img_bgr[i][:,:,1], H, d_size)
-        warp_img_bgr[:,:,2] = cv2.warpPerspective(img_bgr[i][:,:,2], H, d_size)
+        warp_img_bgr[:,:,0] = cv2.warpPerspective(img_bgr[i][:,:,0], H, d_size, None, cv2.INTER_NEAREST)
+        warp_img_bgr[:,:,1] = cv2.warpPerspective(img_bgr[i][:,:,1], H, d_size, None, cv2.INTER_NEAREST)
+        warp_img_bgr[:,:,2] = cv2.warpPerspective(img_bgr[i][:,:,2], H, d_size, None, cv2.INTER_NEAREST)
 
         ### directly paste image to panorama first
         panorama[y_begin:y_end+1, x_begin:x_end+1, 0] += warp_img_bgr[:, :, 0] * mask_xor[i]
@@ -192,11 +192,11 @@ def assemble_2(img_bgr, M, mask):
         overlay_bgr = poverlay_bgr*pweight_mask + overlay_bgr*weight_mask
         #overlay_bgr = poverlay_bgr*pweight_mask 
         #overlay_bgr = overlay_bgr*weight_mask
-        overlay_bgr[:, :, 0] *= mask_overlay
-        overlay_bgr[:, :, 1] *= mask_overlay
-        overlay_bgr[:, :, 2] *= mask_overlay
+        #overlay_bgr[:, :, 0] *= mask_overlay
+        #overlay_bgr[:, :, 1] *= mask_overlay
+        #overlay_bgr[:, :, 2] *= mask_overlay
 
-        panorama[oy_begin:oy_end, ox_begin:ox_end, :] += overlay_bgr 
+        panorama[oy_begin:oy_end, ox_begin:ox_end, :] = overlay_bgr 
         cv2.imwrite('panorama'+str(i)+'.jpg', panorama) 
         ### save current warp image
         pwarp_img_bgr = warp_img_bgr
